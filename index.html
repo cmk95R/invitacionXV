@@ -479,47 +479,43 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled = true;
     submitBtn.textContent = "Enviando...";
 
-    // Enviar datos a Google Apps Script
+    // Enviar datos a Google Apps Script (sin CORS)
     fetch("https://script.google.com/macros/s/AKfycbzNSBRYDEd_WaJHb4IsMwX18TjVCQaDIlMdzdTsQqu5wMntTqkcjUUt4LEVuYfspqo-/exec", {
       method: "POST",
       body: data,
+      mode: "no-cors"
     })
-      .then((response) => {
-        if (response.ok) {
-          // Mostrar mensaje de confirmación
-          confirmationMessage.classList.remove("hidden");
-
-          // Ocultar el formulario
-          form.classList.add("hidden");
-
-          // Lanzar confeti 🎉
-          lanzarConfeti();
-
-          // Resetear formulario (opcional)
-          form.reset();
-        } else {
-          alert("Error al enviar los datos. Por favor, intentá nuevamente.");
-        }
-      })
-      .catch(() => {
-        alert("Error de conexión. Reintentá en unos segundos.");
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Confirmar";
-      });
+    .then(() => {
+      // Suponemos éxito y mostramos confirmación
+      confirmationMessage.classList.remove("hidden");
+      form.classList.add("hidden");
+      lanzarConfeti();
+      form.reset();
+    })
+    .catch(() => {
+      alert("Error de conexión. Reintentá en unos segundos.");
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Confirmar";
+    });
   });
 
   // Función de confeti 🎊 (usando canvas confetti)
   function lanzarConfeti() {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-    });
+    if (typeof confetti === "function") {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    } else {
+      console.warn("confetti.js no está cargado.");
+    }
   }
 });
 </script>
+
 
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"type="module"></script>
         <script src="https://unpkg.com/lottie-web@5.7.4/build/player/lottie.min.js"></script>
