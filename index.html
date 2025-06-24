@@ -453,13 +453,12 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
 
     const data = new FormData(form);
-
-    const nombre = data.get("name").trim();
-    const telefono = data.get("phone").trim();
-    const mensaje = data.get("message").trim();
+    const nombre = (data.get("name") || "").trim();
+    const telefono = (data.get("phone") || "").trim();
+    const mensaje = (data.get("message") || "").trim();
     const submitBtn = form.querySelector("button[type='submit']");
 
-    // Validación estricta
+    // Validaciones estrictas
     if (!/^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]{5,}$/.test(nombre)) {
       alert("Por favor, ingresá tu nombre completo (mínimo 5 letras, sin números).");
       return;
@@ -475,33 +474,35 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Desactivar botón para evitar doble envío
+    // ✅ Solo si todo validó, se ejecuta esta función:
+    enviarFormulario(data, submitBtn);
+  });
+
+  function enviarFormulario(data, submitBtn) {
     submitBtn.disabled = true;
     submitBtn.textContent = "Enviando...";
 
-    // Enviar datos a Google Apps Script (sin CORS)
     fetch("https://script.google.com/macros/s/AKfycbzNSBRYDEd_WaJHb4IsMwX18TjVCQaDIlMdzdTsQqu5wMntTqkcjUUt4LEVuYfspqo-/exec", {
       method: "POST",
       body: data,
       mode: "no-cors"
     })
-    .then(() => {
-      // Suponemos éxito y mostramos confirmación
-      confirmationMessage.classList.remove("hidden");
-      form.classList.add("hidden");
-      lanzarConfeti();
-      form.reset();
-    })
-    .catch(() => {
-      alert("Error de conexión. Reintentá en unos segundos.");
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Confirmar";
-    });
-  });
+      .then(() => {
+        document.getElementById("confirmationMessage").classList.remove("hidden");
+        document.getElementById("rsvpForm").classList.add("hidden");
+        lanzarConfeti();
+      })
+      .catch(() => {
+        alert("Error de conexión. Reintentá en unos segundos.");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Confirmar";
+        form.reset();
+      });
+  }
 
-  // Función de confeti 🎊 (usando canvas confetti)
+  // 🎉 Confeti (asegurate que confetti.min.js esté incluido)
   function lanzarConfeti() {
     if (typeof confetti === "function") {
       confetti({
@@ -515,6 +516,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 </script>
+
 
 
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"type="module"></script>
