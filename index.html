@@ -520,62 +520,71 @@ document.addEventListener("DOMContentLoaded", function () {
         </script>
         // Guardar Canciones addEventListener
         <script>
-            document.getElementById("songForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const title = document.getElementById("songTitle").value.trim();
-  const artist = document.getElementById("songArtist").value.trim();
-  const message = document.getElementById("songMessage").value.trim();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("songForm");
 
-  if (!title || !artist) {
-    alert("¡Faltan datos! Canción y Artista son obligatorios.");
-    return;
-  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const submitBtn = form.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
-  const button = e.target.querySelector("button");
-  button.disabled = true;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    const title = document.getElementById("songTitle").value.trim();
+    const artist = document.getElementById("songArtist").value.trim();
+    const message = document.getElementById("songMessage").value.trim();
 
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxrJaaOKv190C7ZII4udDBH7kZb2rfmCKwdHiMAG583uojPrSD1o9j7HOIoBE3hOMYBXg/exec", {
-        method: "POST",
-        body: JSON.stringify({ title, artist, message }),
-        headers: { "Content-Type": "application/json" },
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      // Agrega la canción a la lista visual
-      addSongToUI(title, artist);
-      e.target.reset();
-    } else {
-      throw new Error(result.error || "Error desconocido");
+    // 🔒 Validación antes de continuar
+    if (!title || !artist) {
+      alert("Faltan datos: Canción y Artista son obligatorios.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-music mr-2"></i> Añadir Canción';
+      return;
     }
-  } catch (error) {
-    alert(`Error: ${error.message}`);
-  } finally {
-    button.disabled = false;
-    button.innerHTML = '<i class="fas fa-music mr-2"></i> Añadir Canción';
+
+    const data = new FormData();
+    data.append("title", title);
+    data.append("artist", artist);
+    data.append("message", message);
+
+    fetch("https://script.google.com/macros/s/AKfycbxrJaaOKv190C7ZII4udDBH7kZb2rfmCKwdHiMAG583uojPrSD1o9j7HOIoBE3hOMYBXg/exec", {
+      method: "POST",
+      body: data,
+      mode: "no-cors",
+    })
+    .then(() => {
+      // ✅ Solo mostramos en pantalla si el envío fue realizado
+      addSongToUI(title, artist);
+      form.reset();
+    })
+    .catch(() => {
+      alert("Error de conexión al enviar la canción.");
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-music mr-2"></i> Añadir Canción';
+    });
+  });
+
+  function addSongToUI(title, artist) {
+    const songList = document.getElementById("songList");
+    const songItem = document.createElement("div");
+    songItem.className = "song-item bg-white bg-opacity-30 rounded-lg p-3 flex items-center glow-on-hover";
+    songItem.innerHTML = `
+      <div class="bg-white rounded-full p-2 mr-3">
+        <i class="fas fa-music text-purple-800"></i>
+      </div>
+      <div>
+        <h4 class="font-semibold">${title}</h4>
+        <p class="text-sm">${artist}</p>
+      </div>
+    `;
+    songList.prepend(songItem);
   }
 });
+</script>
 
-function addSongToUI(title, artist) {
-  const songList = document.getElementById("songList");
-  const songItem = document.createElement("div");
-  songItem.className = "song-item bg-white bg-opacity-30 rounded-lg p-3 flex items-center glow-on-hover";
-  songItem.innerHTML = `
-    <div class="bg-white rounded-full p-2 mr-3">
-      <i class="fas fa-music text-purple-800"></i>
-    </div>
-    <div>
-      <h4 class="font-semibold">${title}</h4>
-      <p class="text-sm">${artist}</p>
-    </div>
-  `;
-  songList.prepend(songItem);
-}
-        </script>
+
+
 
 
 
