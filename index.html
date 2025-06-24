@@ -451,6 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    e.stopImmediatePropagation(); // ← Bloquea otros listeners
 
     const data = new FormData(form);
     const nombre = (data.get("name") || "").trim();

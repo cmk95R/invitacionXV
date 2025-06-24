@@ -87,19 +87,19 @@ lottie.loadAnimation({
             });
         });
         
-        rsvpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // rsvpForm.addEventListener('submit', function(e) {
+        //     e.preventDefault();
             
-            // Simple form validation
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
+        //     // Simple form validation
+        //     const name = document.getElementById('name').value;
+        //     const phone = document.getElementById('phone').value;
             
-            if (name && phone) {
-                rsvpForm.style.display = 'none';
-                confirmationMessage.style.display = 'block';
-                confirmationMessage.classList.add('animate__animated', 'animate__fadeIn');
-            }
-        });
+        //     if (name && phone) {
+        //         rsvpForm.style.display = 'none';
+        //         confirmationMessage.style.display = 'block';
+        //         confirmationMessage.classList.add('animate__animated', 'animate__fadeIn');
+        //     }
+        // });
         
         // Song suggestion form
         const songForm = document.getElementById('songForm');
