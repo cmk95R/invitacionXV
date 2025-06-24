@@ -444,6 +444,7 @@
         
     </div>
     </div>
+        // Guardar Confirmaciones
         <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("rsvpForm");
@@ -516,7 +517,66 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
-</script>
+        </script>
+        // Guardar Canciones addEventListener
+        <script>
+            document.getElementById("songForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const title = document.getElementById("songTitle").value.trim();
+  const artist = document.getElementById("songArtist").value.trim();
+  const message = document.getElementById("songMessage").value.trim();
+
+  if (!title || !artist) {
+    alert("¡Faltan datos! Canción y Artista son obligatorios.");
+    return;
+  }
+
+  const button = e.target.querySelector("button");
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxIgQtvzj7yKYfi0hA9A9Ft1ylPlocgMqqlJBwJ1dQKb9KUpdfl_YNNcLXkmBjM2EH1/exec", {
+      method: "POST",
+      body: JSON.stringify({ title, artist, message }),
+      mode: "no-cors", // ← Solo para desarrollo local
+      headers: { "Content-Type": "application/json" }
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Agrega la canción a la lista visual
+      addSongToUI(title, artist);
+      e.target.reset();
+    } else {
+      throw new Error(result.error || "Error desconocido");
+    }
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = '<i class="fas fa-music mr-2"></i> Añadir Canción';
+  }
+});
+
+function addSongToUI(title, artist) {
+  const songList = document.getElementById("songList");
+  const songItem = document.createElement("div");
+  songItem.className = "song-item bg-white bg-opacity-30 rounded-lg p-3 flex items-center glow-on-hover";
+  songItem.innerHTML = `
+    <div class="bg-white rounded-full p-2 mr-3">
+      <i class="fas fa-music text-purple-800"></i>
+    </div>
+    <div>
+      <h4 class="font-semibold">${title}</h4>
+      <p class="text-sm">${artist}</p>
+    </div>
+  `;
+  songList.prepend(songItem);
+}
+        </script>
 
 
 
