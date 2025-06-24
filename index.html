@@ -537,11 +537,10 @@ document.addEventListener("DOMContentLoaded", function () {
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxIgQtvzj7yKYfi0hA9A9Ft1ylPlocgMqqlJBwJ1dQKb9KUpdfl_YNNcLXkmBjM2EH1/exec", {
-      method: "POST",
-      body: JSON.stringify({ title, artist, message }),
-      mode: "no-cors", // ← Solo para desarrollo local
-      headers: { "Content-Type": "application/json" }
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxrJaaOKv190C7ZII4udDBH7kZb2rfmCKwdHiMAG583uojPrSD1o9j7HOIoBE3hOMYBXg/exec", {
+        method: "POST",
+        body: JSON.stringify({ title, artist, message }),
+        headers: { "Content-Type": "application/json" },
     });
     
     const result = await response.json();
