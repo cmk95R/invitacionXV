@@ -1,4 +1,5 @@
-<html lang="es"><head>
+<html lang="es">
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Quince Años</title>
@@ -7,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    </head>
 <body class="overflow-hidden">
     <div class="container" id="main-container">
         <!-- Navigation Dots -->
@@ -444,27 +446,82 @@
     </div>
     </div>
         <script>
-  document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("rsvpForm");
+  const confirmationMessage = document.getElementById("confirmationMessage");
+
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const form = e.target;
     const data = new FormData(form);
 
-    fetch('https://script.google.com/macros/s/AKfycbx--lSccdDcvfUgTeFXkZ7D10GtE3yk14_Qw_WYaZMpOC38aeDgeadlIZpic-5AZ6rk/exec', { // PONÉ TU URL
-      method: 'POST',
-      body: data
+    const nombre = data.get("name").trim();
+    const telefono = data.get("phone").trim();
+    const mensaje = data.get("message").trim();
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    // Validación estricta
+    if (!/^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]{5,}$/.test(nombre)) {
+      alert("Por favor, ingresá tu nombre completo (mínimo 5 letras, sin números).");
+      return;
+    }
+
+    if (!/^\d{8,15}$/.test(telefono)) {
+      alert("Ingresá un teléfono válido (solo números, 8 a 15 dígitos).");
+      return;
+    }
+
+    if (mensaje.length > 250) {
+      alert("El mensaje no debe superar los 250 caracteres.");
+      return;
+    }
+
+    // Desactivar botón para evitar doble envío
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Enviando...";
+
+    // Enviar datos a Google Apps Script
+    fetch("https://script.google.com/macros/s/AKfycbwf4fjp8mDDKPqfKG7HfuGBcUPUiQQE7JUdHjB3AkWzIOg4pyK7ESLwU6mF8P7sAhSl/exec", {
+      method: "POST",
+      body: data,
     })
-    .then(response => {
-      if (response.ok) {
-        document.getElementById('confirmationMessage').classList.remove('hidden');
-        form.reset();
-      } else {
-        alert('Error al enviar. Intenta otra vez.');
-      }
-    })
-    .catch(() => alert('Error de conexión.'));
+      .then((response) => {
+        if (response.ok) {
+          // Mostrar mensaje de confirmación
+          confirmationMessage.classList.remove("hidden");
+
+          // Ocultar el formulario
+          form.classList.add("hidden");
+
+          // Lanzar confeti 🎉
+          lanzarConfeti();
+
+          // Resetear formulario (opcional)
+          form.reset();
+        } else {
+          alert("Error al enviar los datos. Por favor, intentá nuevamente.");
+        }
+      })
+      .catch(() => {
+        alert("Error de conexión. Reintentá en unos segundos.");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Confirmar";
+      });
   });
-        </script>
+
+  // Función de confeti 🎊 (usando canvas confetti)
+  function lanzarConfeti() {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
+});
+</script>
+
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"type="module"></script>
         <script src="https://unpkg.com/lottie-web@5.7.4/build/player/lottie.min.js"></script>
         
